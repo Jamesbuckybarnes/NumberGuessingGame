@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Number Guessing Game</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #36393f;
+            color: #fff;
+            margin: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+        .container {
+            background-color: #2f3136;
+            border-radius: 8px;
+            padding: 20px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            text-align: center;
+        }
+        h1 {
+            color: #7289da;
+        }
+        p {
+            color: #b9bbbe;
+            margin-bottom: 20px;
+        }
+        #guess-input {
+            padding: 10px;
+            margin: 10px;
+            width: 120px;
+            border: none;
+            border-radius: 4px;
+            background-color: #40444b;
+            color: #fff;
+            font-size: 16px;
+        }
+        #result {
+            margin-top: 20px;
+            font-size: 18px;
+        }
+        button {
+            padding: 10px 20px;
+            font-size: 16px;
+            background-color: #7289da;
+            color: #fff;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+        button:hover {
+            background-color: #677bc4;
+        }
+        .streak {
+            color: #b9bbbe;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Number Guessing Game</h1>
+        <p>I've selected a number between 1 and 100. Can you guess it?</p>
+        <input type="number" id="guess-input" min="1" max="100">
+        <button onclick="checkGuess()">Guess</button>
+        <p id="result"></p>
+        <p>🎉 Streak: <span id="streak" class="streak">0</span></p>
+    </div>
+
+    <script>
+        let randomNumber, remainingTries, streak = 0, timeoutId;
+        let gameStarted = false;
+
+        function startGame() {
+            randomNumber = Math.floor(Math.random() * 100) + 1;
+            remainingTries = 7;
+            document.getElementById('streak').textContent = streak;
+            document.getElementById('result').textContent = "I've selected a number between 1 and 100. Can you guess it?";
+            document.getElementById('guess-input').disabled = false;
+            document.querySelector('button').disabled = false;
+            if (!gameStarted) {
+                document.getElementById('guess-input').addEventListener('keypress', function(event) {
+                    if (event.key === 'Enter') {
+                        checkGuess();
+                    }
+                });
+                gameStarted = true; 
+            }
+        }
+
+        function checkGuess() {
+            const guessInput = document.getElementById('guess-input');
+            const guess = parseInt(guessInput.value);
+
+            if (isNaN(guess) || guess < 1 || guess > 100) {
+                alert("Please enter a valid number between 1 and 100.");
+                return;
+            }
+
+            remainingTries--;
+
+            if (guess === randomNumber) {
+                document.getElementById('result').textContent = `🎉 Congratulations! You guessed it right!`;
+                streak++;
+                document.getElementById('streak').textContent = streak;
+                disableInput();
+                restartAfterDelay();
+            } else if (guess < randomNumber) {
+                document.getElementById('result').textContent = `🔼 Higher. ${remainingTries} tries left.`;
+            } else {
+                document.getElementById('result').textContent = `🔽 Lower. ${remainingTries} tries left.`;
+            }
+
+            if (remainingTries === 0 && guess !== randomNumber) {
+                document.getElementById('result').textContent = `😔 Sorry, you've run out of tries. The correct number was ${randomNumber}.`;
+                disableInput();
+                streak = 0; 
+                restartAfterDelay();
+            }
+        }
+
+        function restartAfterDelay() {
+            timeoutId = setTimeout(startGame, 5000); 
+        }
+
+        function disableInput() {
+            document.getElementById('guess-input').disabled = true;
+            document.querySelector('button').disabled = true;
+        }
+
+        startGame(); 
+    </script>
+</body>
+</html>
+
